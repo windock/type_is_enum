@@ -1,4 +1,4 @@
-# TypesafeEnum
+# TypeIsEnum
 
 [![Build Status](https://travis-ci.org/dmolesUC3/typesafe_enum.svg?branch=master)](https://travis-ci.org/dmolesUC3/typesafe_enum)
 [![Code Climate](https://codeclimate.com/github/dmolesUC3/typesafe_enum.svg)](https://codeclimate.com/github/dmolesUC3/typesafe_enum)
@@ -38,7 +38,7 @@ Create a new enum class and a set of instances:
 ```ruby
 require 'typesafe_enum'
 
-class Suit < TypesafeEnum::Enum
+class Suit < TypeIsEnum::Enum
   new :CLUBS
   new :DIAMONDS
   new :HEARTS
@@ -66,7 +66,7 @@ Suit::CLUBS.value
 But you can also declare an explicit `value`:
 
 ```ruby
-class Tarot < TypesafeEnum::ValueEnum
+class Tarot < TypeIsEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
@@ -80,7 +80,7 @@ Tarot::CUPS.value
 And `values` need not be strings:
 
 ```ruby
-class Scale < TypesafeEnum::ValueEnum
+class Scale < TypeIsEnum::ValueEnum
   new :DECA, 10
   new :HECTO, 100
   new :KILO, 1_000
@@ -94,7 +94,7 @@ Scale::KILO.value
 Declaring two instances with the same key will produce an error:
 
 ```ruby
-class Suit < TypesafeEnum::Enum
+class Suit < TypeIsEnum::Enum
   new :CLUBS
   new :DIAMONDS
   new :HEARTS
@@ -117,7 +117,7 @@ typesafe_enum/lib/typesafe_enum/base.rb:88:in `valid_key_and_value': Suit::SPADE
 Likewise two instances with the same value but different keys:
 
 ```ruby
-class Tarot < TypesafeEnum::ValueEnum
+class Tarot < TypeIsEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
@@ -141,14 +141,14 @@ However, declaring an identical key/value pair will be ignored with a warning, t
 when, e.g., a declaration file is accidentally loaded twice.
 
 ```ruby
-class Tarot < TypesafeEnum::ValueEnum
+class Tarot < TypeIsEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
   new :SWORDS, 'Swords'
 end
 
-class Tarot < TypesafeEnum::ValueEnum
+class Tarot < TypeIsEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
@@ -270,7 +270,7 @@ Enum classes are just classes. They can have methods, and other non-enum constan
 the base class. If you need to redefine it, be sure to alias and call the original.)
 
 ```ruby
-class Suit < TypesafeEnum::Enum
+class Suit < TypeIsEnum::Enum
   new :CLUBS
   new :DIAMONDS
   new :HEARTS
@@ -298,7 +298,7 @@ Suit.map(&:pip)
 Enum instances can declare their own methods:
 
 ```ruby
-class Operation < TypesafeEnum::Enum
+class Operation < TypeIsEnum::Enum
   new(:PLUS, '+') do
     def eval(x, y)
       x + y
@@ -370,7 +370,7 @@ and later as a
 [first-class language construct](https://docs.oracle.com/javase/1.5.0/docs/guide/language/enums.html).
 In Java, an `Enum` class defines a closed, valued set of _instances of that class,_ rather than
 of a primitive type such as an `int`, and those instances have all the features of other objects,
-such as methods, fields, and type membership. Likewise, a `TypesafeEnum` class defines a valued set
+such as methods, fields, and type membership. Likewise, a `TypeIsEnum` class defines a valued set
 of instances of that class, rather than of a set of some other type.
 
 ```ruby
@@ -401,11 +401,11 @@ enum Suit {
 }
 ```
 
-With `TypesafeEnum`, instance-specific methods require extra parentheses,
+With `TypeIsEnum`, instance-specific methods require extra parentheses,
 as shown above, and about the best you can do even for simple enums is something like:
 
 ```ruby
-class CMYKColor < TypesafeEnum::Enum
+class CMYKColor < TypeIsEnum::Enum
   [:CYAN, :MAGENTA, :YELLOW, :BLACK].each { |c| new c }
 end
 ```
@@ -413,7 +413,7 @@ end
 ### No special `switch`/`case` support
 
 The Java compiler will warn you if a `switch` statement doesn't include all instances of a Java enum.
-Ruby doesn't care whether you cover all instances of a `TypesafeEnum`, and in fact it doesn't care if
+Ruby doesn't care whether you cover all instances of a `TypeIsEnum`, and in fact it doesn't care if
 your `when` statements include a mix of enum instances of different classes, or of enum instances and
 other things. (In some respects this latter is a feature, of course.)
 
@@ -421,7 +421,7 @@ other things. (In some respects this latter is a feature, of course.)
 
 The Java `Enum` class has special code to ensure that enum instances are deserialized to the existing
 singleton constants. This can be done with Ruby [`Marshal`](http://ruby-doc.org/core-2.2.3/Marshal.html)
-(by defining `marshal_load`) but it didn't seem worth the trouble, so a deserialized `TypesafeEnum` will
+(by defining `marshal_load`) but it didn't seem worth the trouble, so a deserialized `TypeIsEnum` will
 not be identical to the original:
 
 ```ruby
@@ -449,7 +449,7 @@ in a later version. (Pull requests welcome!)
 Java has `Enum`-specific classes like
 [`EnumSet`](http://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html) and
 [`EnumMap`](http://docs.oracle.com/javase/8/docs/api/java/util/EnumMap.html) that provide special
-high-performance, optimized versions of its collection interfaces. `TypesafeEnum` doesn't.
+high-performance, optimized versions of its collection interfaces. `TypeIsEnum` doesn't.
 
 ### Enum classes are not closed
 
