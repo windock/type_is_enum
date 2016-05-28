@@ -1,6 +1,6 @@
 ## 0.1.7 (28 April 2016)
 
-- The default `to_s` for `TypesafeEnum::Base` now includes the enum's class, key, value,
+- The default `to_s` for `TypesafeEnum::Enum` now includes the enum's class, key, value,
   and ordinal, e.g.
 
       Suit::DIAMONDS.to_s

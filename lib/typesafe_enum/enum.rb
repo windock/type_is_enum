@@ -2,7 +2,7 @@
 # [typesafe enum pattern](http://www.oracle.com/technetwork/java/page1-139488.html#replaceenums)
 module TypesafeEnum
   # Base class for typesafe enum classes.
-  class Base
+  class Enum
     include Comparable
 
     class << self
@@ -49,21 +49,6 @@ module TypesafeEnum
         by_key[key]
       end
 
-      # Looks up an enum instance based on its value
-      # @param value [Object] the value to look up
-      # @return [self, nil] the corresponding enum instance, or nil
-      def find_by_value(value)
-        by_value[value]
-      end
-
-      # Looks up an enum instance based on the string representation of its value
-      # @param value_str [String] the string form of the value
-      # @return [self, nil] the corresponding enum instance, or nil
-      def find_by_value_str(value_str)
-        value_str = value_str.to_s
-        by_value_str[value_str]
-      end
-
       # Looks up an enum instance based on its ordinal
       # @param ord [Integer] the ordinal to look up
       # @return [self, nil] the corresponding enum instance, or nil
@@ -74,43 +59,41 @@ module TypesafeEnum
 
       private
 
+      def add(key, *args, &block)
+        fail TypeError, "#{key} is not a symbol" unless key.is_a?(Symbol)
+        obj = new(*args)
+        obj.instance_variable_set :@key, key
+        obj.instance_variable_set :@ord, size
+        self.class_exec(obj) do |instance|
+          register(instance)
+          instance.instance_eval(&block) if block_given?
+        end
+      end
+
       def by_key
         @by_key ||= {}
-      end
-
-      def by_value
-        @by_value ||= {}
-      end
-
-      def by_value_str
-        @by_value_str ||= {}
       end
 
       def as_array
         @as_array ||= []
       end
 
-      def valid_key_and_value(instance)
+      def valid_key(instance)
         key = instance.key
-        value = instance.value
         if (found = find_by_key(key))
-          fail NameError, "#{name}::#{key} already exists" unless value == found.value
-          warn("ignoring redeclaration of #{name}::#{key} with value #{value} (source: #{caller[4]})")
+          warn("ignoring redeclaration of #{name}::#{key} (source: #{caller[4]})")
           nil
         else
-          fail NameError, "A #{name} instance with value '#{value}' already exists" if find_by_value(value)
-          [key, value]
+          key
         end
       end
 
       def register(instance)
-        key, value = valid_key_and_value(instance)
-        return unless key && value
+        key = valid_key(instance)
+        return unless key
 
         const_set(key.to_s, instance)
         by_key[key] = instance
-        by_value[value] = instance
-        by_value_str[value.to_s] = instance
         as_array << instance
       end
     end
@@ -118,10 +101,6 @@ module TypesafeEnum
     # The symbol key for the enum instance
     # @return [Symbol] the key
     attr_reader :key
-
-    # The value encapsulated by the enum instance
-    # @return [Object] the value
-    attr_reader :value
 
     # The ordinal of the enum instance, in declaration order
     # @return [Integer] the ordinal
@@ -148,23 +127,7 @@ module TypesafeEnum
     end
 
     def to_s
-      "#{self.class}::#{key} [#{ord}] -> #{value}"
+      "#{self.class}::#{key} [#{ord}]"
     end
-
-    private
-
-    def initialize(key, value = nil, &block)
-      fail TypeError, "#{key} is not a symbol" unless key.is_a?(Symbol)
-      @key = key
-      @value = value || key.to_s.downcase
-      @ord = self.class.size
-      self.class.class_exec(self) do |instance|
-        register(instance)
-        instance.instance_eval(&block) if block_given?
-      end
-    end
-
-    private_class_method :new
-
   end
 end

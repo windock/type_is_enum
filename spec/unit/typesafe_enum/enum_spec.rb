@@ -1,46 +1,63 @@
 # coding: utf-8
 require 'spec_helper'
 
-class Suit < TypesafeEnum::Base
-  new :CLUBS
-  new :DIAMONDS
-  new :HEARTS
-  new :SPADES
+class Suit < TypesafeEnum::Enum
+  add :CLUBS
+  add :DIAMONDS
+  add :HEARTS
+  add :SPADES
 end
 
-class Tarot < TypesafeEnum::Base
-  new :CUPS, 'Cups'
-  new :COINS, 'Coins'
-  new :WANDS, 'Wands'
-  new :SWORDS, 'Swords'
+class Tarot < TypesafeEnum::ValueEnum
+  add :CUPS, 'Cups'
+  add :COINS, 'Coins'
+  add :WANDS, 'Wands'
+  add :SWORDS, 'Swords'
 end
 
-class RGBColor < TypesafeEnum::Base
-  new :RED, :red
-  new :GREEN, :green
-  new :BLUE, :blue
+class RGBColor < TypesafeEnum::ValueEnum
+  add :RED, :red
+  add :GREEN, :green
+  add :BLUE, :blue
 end
 
-class Scale < TypesafeEnum::Base
-  new :DECA, 10
-  new :HECTO, 100
-  new :KILO, 1_000
-  new :MEGA, 1_000_000
+class Scale < TypesafeEnum::ValueEnum
+  add :DECA, 10
+  add :HECTO, 100
+  add :KILO, 1_000
+  add :MEGA, 1_000_000
+end
+
+class Car < TypesafeEnum::Enum
+  def initialize(price, coolness)
+    @price = price
+    @coolness = coolness
+  end
+
+  attr_reader :price, :coolness
+
+  add :Audi, 25000, 4
+  add :Mercedes, 30000, 6
+  add :Toyota, 10000, 2
 end
 
 module TypesafeEnum
-  describe Base do
+  describe Enum do
 
-    describe '::new' do
-      it ' news a constant enum value' do
+    it 'allows custom constructors with multiple arguments' do
+      expect(Car.to_a.map(&:coolness)).to eq([4, 6, 2])
+    end
+
+    describe '::add' do
+      it ' adds a constant enum value' do
         enum = Suit::CLUBS
         expect(enum).to be_a(Suit)
       end
 
       it 'insists symbols be symbols' do
         expect do
-          class ::StringKeys < Base
-            new 'spades', 'spades'
+          class ::StringKeys < ValueEnum
+            add 'spades', 'spades'
           end
         end.to raise_error(TypeError)
         expect(::StringKeys.to_a).to be_empty
@@ -48,66 +65,35 @@ module TypesafeEnum
 
       it 'insists symbols be uppercase' do
         expect do
-          class ::LowerCaseKeys < Base
-            new :spades, 'spades'
+          class ::LowerCaseKeys < ValueEnum
+            add :spades, 'spades'
           end
         end.to raise_error(NameError)
         expect(::LowerCaseKeys.to_a).to be_empty
       end
 
-      it 'disallows duplicate symbols with different values' do
-        expect do
-          class ::DuplicateSymbols < Base
-            new :SPADES, 'spades'
-            new :SPADES, 'more spades'
-          end
-        end.to raise_error(NameError)
-        expect(::DuplicateSymbols.to_a).to eq([::DuplicateSymbols::SPADES])
-        expect(::DuplicateSymbols::SPADES.value).to eq('spades')
-        expect(::DuplicateSymbols.find_by_value('more spades')).to be_nil
-      end
-
-      it 'disallows duplicate values with different symbols' do
-        expect do
-          class ::DuplicateValues < Base
-            new :SPADES, 'spades'
-            new :ALSO_SPADES, 'spades'
-          end
-        end.to raise_error(NameError)
-        expect(::DuplicateValues.to_a).to eq([::DuplicateValues::SPADES])
-        expect(::DuplicateValues::SPADES.value).to eq('spades')
-        expect(::DuplicateValues.find_by_key(:ALSO_SPADES)).to be_nil
-      end
-
       it 'disallows nil keys' do
         expect do
-          class ::NilKeys < Base
-            new nil, 'nil'
+          class ::NilKeys < ValueEnum
+            add nil, 'nil'
           end
         end.to raise_error(TypeError)
         expect(::NilKeys.to_a).to be_empty
       end
 
       it 'allows, but ignores redeclaration of identical instances' do
-        class ::IdenticalInstances < Base
-          new :SPADES, 'spades'
+        class ::IdenticalInstances < ValueEnum
+          add :SPADES, 'spades'
         end
-        expect(::IdenticalInstances).to receive(:warn).with(a_string_matching(/ignoring redeclaration of IdenticalInstances::SPADES with value spades/))
-        class ::IdenticalInstances < Base
-          new :SPADES, 'spades'
+        expect(::IdenticalInstances).to receive(:warn).with(a_string_matching(/ignoring redeclaration of IdenticalInstances::SPADES/))
+        class ::IdenticalInstances < ValueEnum
+          add :SPADES, 'spades'
         end
         expect(::IdenticalInstances.to_a).to eq([::IdenticalInstances::SPADES])
       end
 
-      it 'defaults the value to a lower-cased version of the symbol' do
-        expect(Suit::CLUBS.value).to eq('clubs')
-        expect(Suit::DIAMONDS.value).to eq('diamonds')
-        expect(Suit::HEARTS.value).to eq('hearts')
-        expect(Suit::SPADES.value).to eq('spades')
-      end
-
       it 'is private' do
-        expect { Tarot.new(:PENTACLES) }.to raise_error(NoMethodError)
+        expect { Tarot.add(:PENTACLES) }.to raise_error(NoMethodError)
       end
     end
 
@@ -230,11 +216,11 @@ module TypesafeEnum
       end
 
       it 'returns different values for different types' do
-        class Suit2 < Base
-          new :CLUBS, 'Clubs'
-          new :DIAMONDS, 'Diamonds'
-          new :HEARTS, 'Hearts'
-          new :SPADES, 'Spades'
+        class Suit2 < ValueEnum
+          add :CLUBS, 'Clubs'
+          add :DIAMONDS, 'Diamonds'
+          add :HEARTS, 'Hearts'
+          add :SPADES, 'Spades'
         end
 
         Suit.each do |s1|
@@ -268,15 +254,6 @@ module TypesafeEnum
       end
     end
 
-    describe '#value' do
-      it 'returns the string value of the enum instance' do
-        expected = %w(clubs diamonds hearts spades)
-        Suit.each_with_index do |s, index|
-          expect(s.value).to eq(expected[index])
-        end
-      end
-    end
-
     describe '#key' do
       it 'returns the symbol key of the enum instance' do
         expected = [:CLUBS, :DIAMONDS, :HEARTS, :SPADES]
@@ -300,7 +277,7 @@ module TypesafeEnum
           [Suit, Tarot, RGBColor, Scale].each do |ec|
             ec.each do |ev|
               result = ev.to_s
-              [ec.to_s, ev.key, ev.ord, ev.value].each do |info|
+              [ec.to_s, ev.key, ev.ord].each do |info|
                 expect(result).to include("#{info}")
               end
             end
@@ -320,58 +297,6 @@ module TypesafeEnum
 
       it 'returns nil for invalid keys' do
         expect(Suit.find_by_key(:WANDS)).to be_nil
-      end
-    end
-
-    describe '::find_by_value' do
-      it 'maps values to enum instances' do
-        values = %w(clubs diamonds hearts spades)
-        expected = Suit.to_a
-        values.each_with_index do |n, index|
-          expect(Suit.find_by_value(n)).to be(expected[index])
-        end
-      end
-
-      it 'returns nil for invalid values' do
-        expect(Suit.find_by_value('wands')).to be_nil
-      end
-
-      it 'supports enums with symbol values' do
-        RGBColor.each do |c|
-          expect(RGBColor.find_by_value(c.value)).to be(c)
-        end
-      end
-
-      it 'supports enums with integer values' do
-        Scale.each do |s|
-          expect(Scale.find_by_value(s.value)).to be(s)
-        end
-      end
-    end
-
-    describe '::find_by_value_str' do
-      it 'maps string values to enum instances' do
-        values = %w(clubs diamonds hearts spades)
-        expected = Suit.to_a
-        values.each_with_index do |n, index|
-          expect(Suit.find_by_value_str(n)).to be(expected[index])
-        end
-      end
-
-      it 'returns nil for invalid values' do
-        expect(Suit.find_by_value_str('wands')).to be_nil
-      end
-
-      it 'supports enums with symbol values' do
-        RGBColor.each do |c|
-          expect(RGBColor.find_by_value_str(c.value.to_s)).to be(c)
-        end
-      end
-
-      it 'supports enums with integer values' do
-        Scale.each do |s|
-          expect(Scale.find_by_value_str(s.value.to_s)).to be(s)
-        end
       end
     end
 
@@ -415,13 +340,13 @@ module TypesafeEnum
     end
 
     it 'supports "inner class" methods' do
-      class Operation < Base
-        new(:PLUS, '+') do
+      class Operation < ValueEnum
+        add(:PLUS, '+') do
           def eval(x, y)
             x + y
           end
         end
-        new(:MINUS, '-') do
+        add(:MINUS, '-') do
           def eval(x, y)
             x - y
           end

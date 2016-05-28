@@ -38,7 +38,7 @@ Create a new enum class and a set of instances:
 ```ruby
 require 'typesafe_enum'
 
-class Suit < TypesafeEnum::Base
+class Suit < TypesafeEnum::Enum
   new :CLUBS
   new :DIAMONDS
   new :HEARTS
@@ -66,7 +66,7 @@ Suit::CLUBS.value
 But you can also declare an explicit `value`:
 
 ```ruby
-class Tarot < TypesafeEnum::Base
+class Tarot < TypesafeEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
@@ -80,7 +80,7 @@ Tarot::CUPS.value
 And `values` need not be strings:
 
 ```ruby
-class Scale < TypesafeEnum::Base
+class Scale < TypesafeEnum::ValueEnum
   new :DECA, 10
   new :HECTO, 100
   new :KILO, 1_000
@@ -94,7 +94,7 @@ Scale::KILO.value
 Declaring two instances with the same key will produce an error:
 
 ```ruby
-class Suit < TypesafeEnum::Base
+class Suit < TypesafeEnum::Enum
   new :CLUBS
   new :DIAMONDS
   new :HEARTS
@@ -117,7 +117,7 @@ typesafe_enum/lib/typesafe_enum/base.rb:88:in `valid_key_and_value': Suit::SPADE
 Likewise two instances with the same value but different keys:
 
 ```ruby
-class Tarot < TypesafeEnum::Base
+class Tarot < TypesafeEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
@@ -141,14 +141,14 @@ However, declaring an identical key/value pair will be ignored with a warning, t
 when, e.g., a declaration file is accidentally loaded twice.
 
 ```ruby
-class Tarot < TypesafeEnum::Base
+class Tarot < TypesafeEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
   new :SWORDS, 'Swords'
 end
 
-class Tarot < TypesafeEnum::Base
+class Tarot < TypesafeEnum::ValueEnum
   new :CUPS, 'Cups'
   new :COINS, 'Coins'
   new :WANDS, 'Wands'
@@ -270,7 +270,7 @@ Enum classes are just classes. They can have methods, and other non-enum constan
 the base class. If you need to redefine it, be sure to alias and call the original.)
 
 ```ruby
-class Suit < TypesafeEnum::Base
+class Suit < TypesafeEnum::Enum
   new :CLUBS
   new :DIAMONDS
   new :HEARTS
@@ -298,7 +298,7 @@ Suit.map(&:pip)
 Enum instances can declare their own methods:
 
 ```ruby
-class Operation < TypesafeEnum::Base
+class Operation < TypesafeEnum::Enum
   new(:PLUS, '+') do
     def eval(x, y)
       x + y
@@ -405,7 +405,7 @@ With `TypesafeEnum`, instance-specific methods require extra parentheses,
 as shown above, and about the best you can do even for simple enums is something like:
 
 ```ruby
-class CMYKColor < TypesafeEnum::Base
+class CMYKColor < TypesafeEnum::Enum
   [:CYAN, :MAGENTA, :YELLOW, :BLACK].each { |c| new c }
 end
 ```
