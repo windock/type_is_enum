@@ -1,6 +1,6 @@
-module TypesafeEnum
+module TypeIsEnum
   # The name of this gem
-  NAME = 'typesafe_enum'
+  NAME = 'type_is_enum'
 
   # The version of this gem
   VERSION = '0.1.7'

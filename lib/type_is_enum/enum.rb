@@ -1,6 +1,6 @@
 # A Ruby implementation of Joshua Bloch's
 # [typesafe enum pattern](http://www.oracle.com/technetwork/java/page1-139488.html#replaceenums)
-module TypesafeEnum
+module TypeIsEnum
   # Base class for typesafe enum classes.
   class Enum
     include Comparable

@@ -1,34 +1,34 @@
 # coding: utf-8
 require 'spec_helper'
 
-class Suit < TypesafeEnum::Enum
+class Suit < TypeIsEnum::Enum
   add :CLUBS
   add :DIAMONDS
   add :HEARTS
   add :SPADES
 end
 
-class Tarot < TypesafeEnum::ValueEnum
+class Tarot < TypeIsEnum::ValueEnum
   add :CUPS, 'Cups'
   add :COINS, 'Coins'
   add :WANDS, 'Wands'
   add :SWORDS, 'Swords'
 end
 
-class RGBColor < TypesafeEnum::ValueEnum
+class RGBColor < TypeIsEnum::ValueEnum
   add :RED, :red
   add :GREEN, :green
   add :BLUE, :blue
 end
 
-class Scale < TypesafeEnum::ValueEnum
+class Scale < TypeIsEnum::ValueEnum
   add :DECA, 10
   add :HECTO, 100
   add :KILO, 1_000
   add :MEGA, 1_000_000
 end
 
-class Car < TypesafeEnum::Enum
+class Car < TypeIsEnum::Enum
   def initialize(price, coolness)
     @price = price
     @coolness = coolness
@@ -41,7 +41,7 @@ class Car < TypesafeEnum::Enum
   add :Toyota, 10000, 2
 end
 
-module TypesafeEnum
+module TypeIsEnum
   describe Enum do
 
     it 'allows custom constructors with multiple arguments' do

@@ -3,13 +3,13 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'uri'
-require 'typesafe_enum/module_info'
+require 'type_is_enum/module_info'
 
 Gem::Specification.new do |spec|
-  spec.name          = TypesafeEnum::NAME
-  spec.version       = TypesafeEnum::VERSION
-  spec.authors       = ['David Moles']
-  spec.email         = ['david.moles@ucop.edu']
+  spec.name          = TypeIsEnum::NAME
+  spec.version       = TypeIsEnum::VERSION
+  spec.authors       = ['David Moles', 'Andrew Shcheglov']
+  spec.email         = ['david.moles@ucop.edu', 'godwindock@gmail.com']
   spec.summary       = 'Typesafe enum pattern for Ruby'
   spec.description   = 'A gem that implements the typesafe enum pattern in Ruby'
   spec.license       = 'MIT'

@@ -28,4 +28,4 @@ end
 # ------------------------------------------------------------
 # TypesafeEnum
 
-require 'typesafe_enum'
+require 'type_is_enum'

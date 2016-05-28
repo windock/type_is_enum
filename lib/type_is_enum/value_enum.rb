@@ -1,4 +1,4 @@
-module TypesafeEnum
+module TypeIsEnum
   class ValueEnum < Enum
     def initialize(value)
       @value = value
