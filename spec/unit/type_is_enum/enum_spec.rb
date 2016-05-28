@@ -45,7 +45,11 @@ module TypeIsEnum
   describe Enum do
 
     it 'allows custom constructors with multiple arguments' do
-      expect(Car.to_a.map(&:coolness)).to eq([4, 6, 2])
+      expect(Car.to_a).to contain_exactly(
+        have_attributes(price: 25_000, coolness: 4),
+        have_attributes(price: 30_000, coolness: 6),
+        have_attributes(price: 10_000, coolness: 2)
+      )
     end
 
     describe '::add' do
