@@ -64,7 +64,7 @@ module TypeIsEnum
         obj = new(*args)
         obj.instance_variable_set :@key, key
         obj.instance_variable_set :@ord, size
-        self.class_exec(obj) do |instance|
+        class_exec(obj) do |instance|
           register(instance)
           instance.instance_eval(&block) if block_given?
         end
@@ -80,7 +80,7 @@ module TypeIsEnum
 
       def valid_key(instance)
         key = instance.key
-        if (found = find_by_key(key))
+        if find_by_key(key)
           warn("ignoring redeclaration of #{name}::#{key} (source: #{caller[4]})")
           nil
         else

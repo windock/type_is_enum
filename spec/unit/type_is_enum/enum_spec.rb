@@ -36,9 +36,9 @@ class Car < TypeIsEnum::Enum
 
   attr_reader :price, :coolness
 
-  add :Audi, 25000, 4
-  add :Mercedes, 30000, 6
-  add :Toyota, 10000, 2
+  add :Audi, 25_000, 4
+  add :Mercedes, 30_000, 6
+  add :Toyota, 10_000, 2
 end
 
 module TypeIsEnum
