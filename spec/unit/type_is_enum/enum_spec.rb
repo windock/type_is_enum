@@ -52,6 +52,10 @@ module TypeIsEnum
       )
     end
 
+    it 'has a name that is a key as string' do
+      expect(Car.to_a.map(&:name)).to eq(['Audi', 'Mercedes', 'Toyota'])
+    end
+
     describe '::add' do
       it ' adds a constant enum value' do
         enum = Suit::CLUBS

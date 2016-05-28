@@ -126,6 +126,10 @@ module TypeIsEnum
       end
     end
 
+    def name
+      key.to_s
+    end
+
     def to_s
       "#{self.class}::#{key} [#{ord}]"
     end
